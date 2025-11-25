@@ -94,6 +94,17 @@ const App: React.FC = () => {
     setIsRunning(false);
     setShowWinnerEffect(true);
 
+    // Trigger confetti
+    if (typeof (window as any).confetti === 'function') {
+      (window as any).confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#818cf8', '#c084fc', '#f472b6', '#fbbf24'],
+        zIndex: 100
+      });
+    }
+
     // Add to history
     const newHistoryItem: HistoryItem = {
       id: crypto.randomUUID(),
@@ -231,7 +242,7 @@ const App: React.FC = () => {
                 
                 {/* Score badge for current user */}
                 {!isRunning && displayedName !== "准备就绪" && displayedName !== "???" && (
-                   <div className="mt-4 inline-flex items-center gap-1 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
+                   <div className="mt-4 inline-flex items-center gap-1 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-500">
                      <Trophy className="w-3 h-3 text-yellow-500" />
                      <span className="text-sm font-mono text-yellow-500">
                        当前积分: {scores[displayedName] || 0}
@@ -246,7 +257,7 @@ const App: React.FC = () => {
           <div className="flex gap-4 w-full max-w-2xl justify-center">
              <Button 
                variant="secondary" 
-               className="flex-1 bg-blue-900/30 border-blue-500/30 text-blue-200 hover:bg-blue-800/50"
+               className="flex-1 bg-blue-900/30 border-blue-500/30 text-blue-200 hover:bg-blue-800/50 hover:border-blue-500/50 transition-all"
                disabled={isRunning || displayedName === "准备就绪"}
                onClick={(e) => handleAddScore(1, e)}
              >
@@ -254,7 +265,7 @@ const App: React.FC = () => {
              </Button>
              <Button 
                variant="secondary" 
-               className="flex-1 bg-indigo-900/30 border-indigo-500/30 text-indigo-200 hover:bg-indigo-800/50"
+               className="flex-1 bg-indigo-900/30 border-indigo-500/30 text-indigo-200 hover:bg-indigo-800/50 hover:border-indigo-500/50 transition-all"
                disabled={isRunning || displayedName === "准备就绪"}
                onClick={(e) => handleAddScore(2, e)}
              >
@@ -262,7 +273,7 @@ const App: React.FC = () => {
              </Button>
              <Button 
                variant="secondary" 
-               className="flex-1 bg-purple-900/30 border-purple-500/30 text-purple-200 hover:bg-purple-800/50"
+               className="flex-1 bg-purple-900/30 border-purple-500/30 text-purple-200 hover:bg-purple-800/50 hover:border-purple-500/50 transition-all"
                disabled={isRunning || displayedName === "准备就绪"}
                onClick={(e) => handleAddScore(4, e)}
              >
@@ -275,7 +286,7 @@ const App: React.FC = () => {
             variant={isRunning ? 'danger' : 'primary'} 
             size="xl" 
             onClick={toggleRoll}
-            className="w-full max-w-sm shadow-2xl ring-4 ring-slate-900 text-2xl py-6"
+            className="w-full max-w-sm shadow-2xl ring-4 ring-slate-900 text-2xl py-6 active:scale-95 transition-transform"
           >
             {isRunning ? (
               <span className="flex items-center gap-3">
