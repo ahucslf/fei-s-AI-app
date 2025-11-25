@@ -1,0 +1,16 @@
+{
+  "name": "飞的课堂",
+  "short_name": "飞的课堂",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "description": "趣味随机点名与积分管理系统",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/gh/lucide-icons/lucide/icons/sparkles.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
