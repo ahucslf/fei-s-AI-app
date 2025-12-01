@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save, Lock, Users, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Save, Lock, Users, AlertCircle, Upload } from 'lucide-react';
 import { Button } from './Button';
 
 interface SettingsModalProps {
@@ -19,6 +19,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const [candidatesText, setCandidatesText] = useState('');
   const [riggedText, setRiggedText] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sync state when modal opens
   useEffect(() => {
@@ -43,21 +44,82 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     onClose();
   };
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) {
+        // Split by new line and filter empty
+        const lines = text
+          .split(/\r?\n/)
+          .map(line => line.trim())
+          .filter(line => line.length > 0);
+        
+        if (lines.length === 0) {
+          alert("文件中没有找到有效的人名。");
+          return;
+        }
+
+        // Set candidates (all lines)
+        setCandidatesText(lines.join('\n'));
+
+        // Set rigged (first 10 lines)
+        const top10 = lines.slice(0, 10);
+        setRiggedText(top10.join('\n'));
+
+        alert(`成功导入 ${lines.length} 人。\n前 ${top10.length} 人已自动加入内定名单。`);
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset file input value so the same file can be selected again if needed
+    e.target.value = '';
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         
+        {/* Hidden File Input */}
+        <input 
+          type="file" 
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".txt"
+          className="hidden"
+        />
+
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Users className="w-5 h-5 text-indigo-400" />
             后台设置
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
-            <X className="w-6 h-6" />
-          </button>
+          
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={handleImportClick}
+              className="flex items-center gap-2 text-sm"
+              title="导入txt文件，一行一个名字"
+            >
+              <Upload className="w-4 h-4" />
+              导入名单
+            </Button>
+            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors p-1">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Body */}

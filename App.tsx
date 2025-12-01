@@ -287,7 +287,7 @@ ${sortedList.map(([name, score], index) => `第 ${index + 1} 名: ${name}  [${sc
 
   // Sorted Leaderboard Data
   const sortedScores = Object.entries(scores)
-    .sort((a, b) => (b[1] as number) - (a[1] as number));
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
   
   const hasScores = sortedScores.length > 0;
 
