@@ -226,34 +226,25 @@ const App: React.FC = () => {
   };
 
   const handleClearScores = () => {
-    const hasScores = Object.keys(scores).length > 0;
-    
-    if (!hasScores) {
-      alert("当前没有积分数据可清空。");
+    if (Object.keys(scores).length === 0) {
+      // alert("当前没有积分数据可清空。"); // Optional feedback
       return;
     }
 
-    // Use setTimeout to ensure the UI isn't blocking the confirm dialog logic
-    setTimeout(() => {
-      if (window.confirm("⚠️ 高危操作确认\n\n确定要清空所有人的积分吗？\n\n・ 此操作不可撤销\n・ 建议先点击下载按钮备份数据")) {
-        // 1. Clear State
-        setScores({});
-        setScoreHistory([]);
-        
-        // 2. Force Clear LocalStorage Immediately
-        localStorage.removeItem('feis_scores');
-        localStorage.removeItem('feis_score_history');
-        localStorage.setItem('feis_scores', '{}'); // Explicitly write empty object
-        
-        // 3. Optional: Trigger confetti for a clean slate feeling (or sound)
-        console.log("Scores cleared successfully.");
-      }
-    }, 50);
+    // Directly clear scores without confirmation as requested
+    setScores({});
+    setScoreHistory([]);
+    localStorage.removeItem('feis_scores');
+    localStorage.removeItem('feis_score_history');
+    
+    // Explicitly set empty objects to storage
+    localStorage.setItem('feis_scores', '{}');
+    localStorage.setItem('feis_score_history', '[]');
   };
 
   const handleExportScores = () => {
     const sortedList = Object.entries(scores)
-      .sort((a, b) => b[1] - a[1]);
+      .sort((a, b) => Number(b[1]) - Number(a[1]));
       
     if (sortedList.length === 0) {
         alert("暂无数据可导出");
@@ -447,13 +438,15 @@ ${sortedList.map(([name, score], index) => `第 ${index + 1} 名: ${name}  [${sc
                   >
                     <Download className="w-4 h-4" />
                   </button>
+                  <div className="w-px h-4 bg-slate-700 mx-1"></div>
                   <button 
+                    type="button"
                     onClick={handleClearScores}
-                    className={`p-1.5 rounded transition-all ${hasScores ? 'text-red-500/70 hover:text-red-400 hover:bg-slate-700/80 cursor-pointer' : 'text-slate-700 cursor-default'}`}
-                    title="清空排行榜"
-                    // Removed disabled attribute to ensure click event fires and we can show alert if empty
+                    className="flex items-center gap-1 px-2 py-1.5 rounded text-slate-400 hover:text-red-400 hover:bg-red-900/20 transition-colors relative z-20 cursor-pointer"
+                    title="点击直接清空所有积分"
                   >
                     <Trash2 className="w-4 h-4" />
+                    <span className="text-xs font-medium">清空</span>
                   </button>
                 </div>
              </div>
